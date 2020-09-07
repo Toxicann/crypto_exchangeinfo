@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:async';
+
+import 'coininfo.dart';
+import 'currencycard.dart';
 
 class TestApi extends StatefulWidget {
   @override
@@ -14,32 +14,65 @@ class _TestApiState extends State<TestApi> {
     getCoinInfo();
   }
 
-  Future getInfo() async {
-    print('test 1');
-    http.Response response = await http.get(
-        'https://rest.coinapi.io/v1/exchangerate/BTC/USD?apikey=A9BDA070-BE75-4F2F-811B-A3D59AF9B309');
-    print('test 2');
-    print(response.body);
-    String data = jsonDecode(response.body);
-    print(data);
-    return response.body;
-  }
-
+  var rate;
   void getCoinInfo() async {
-    print('test 3');
-    var data = await getInfo();
-    print('test 4');
-    print(data);
+    CoinInfo coinInfo = CoinInfo();
+    rate = await coinInfo.getInfo();
+    setState(() {
+      return rate.toString();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-          // child: FloatingActionButton(onPressed: () {
-          //   getInfo();
-          // }),
+    return SafeArea(
+      minimum: EdgeInsets.only(top: 49.0),
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            'CryptXchange',
+            style: TextStyle(fontStyle: FontStyle.italic),
           ),
+        ),
+        body: Container(
+          decoration: BoxDecoration(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 25.0,
+                width: double.infinity,
+                child: Text(''),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 18.0),
+                child: Text(
+                  'Exchange Info',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                ),
+              ),
+              CurrencyCard(
+                currencyName: 'BTC',
+                amount: '1.00',
+              ),
+              Icon(
+                Icons.swap_vert,
+                size: 60,
+              ),
+              CurrencyCard(
+                currencyName: 'USD',
+                amount: rate,
+              ),
+              RaisedButton(
+                onPressed: null,
+                child: Text('Generate'),
+                color: Colors.purpleAccent,
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
